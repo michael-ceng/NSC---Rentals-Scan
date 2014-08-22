@@ -43,7 +43,8 @@ def crawlSite(seedurl):
     crawled = []
     contactList = []
     while toScan:
-        page = toScan.pop() # Takes last element from tocrawl and crawls if not == to element in crawled
+        page = toScan.pop() 
+        # Takes last element from tocrawl and crawls if not == to element in crawled
         if page not in crawled:
             contactList.append(getContact(page_source(page))) # Adds the info from the page source of page to contactList
             combine(toScan, getNextLink(page_source(page))) # Adds the url of the next page to crawl to tocrawl
@@ -51,5 +52,5 @@ def crawlSite(seedurl):
         return crawled
     return contactList
     # Main loop, scans and puts page into list crawled
-    # Will not crawl through elements in crawled
-    # SHOULD return all contacts found
+    # Will not scan through elements in crawled
+    # SHOULD return all contacts--incomplete or otherwise--found
