@@ -1,16 +1,21 @@
 import urllib2
 
-# seedurl = "http://www.vacationrentals.com/vacation-rentals/7598.html?promoType=deal"
-# Input should be a specific home rental page
-#response = urllib2.urlopen("http://www.vacationrentals.com/vacation-rentals/7598.html?promoType=deal")
+# seedurl = 'http://www.vacationrentals.com/vacation-rentals/7598.html?promoType=deal'
+# Input should be a specific home rental page AND SHOULD USE SINGLE QUOTES
+#response = urllib2.urlopen('http://www.vacationrentals.com/vacation-rentals/7598.html?promoType=deal')
 #page_source = response.read()
 
 #def page_source(x):
     #response = urllib2.urlopen(x)
     #page_source = response.read()
     # To get page source from a url
-    # Broken
+    ## Broken
 
+def combine(l1,l2):
+    for element in l2:
+        if element not in l1:
+            l1.append(element)
+    # If nextLink isn't in toScan, add to toScan
 
 def getContact(n):
     checkpoint = n.find('<p style="color: #000;">')
@@ -20,37 +25,28 @@ def getContact(n):
     return name
     # Works, gets contact name and number if available
 
-
 def getNextLink(url):
     checkpoint1 = url.find('View Another')
     checkpoint2 = url.find('<a href=', checkpoint1 - 75)
+    # subtraction in indexing could cause problems but can be readjusted if need be
     startpos1 = url.find('/vacation-rentals', checkpoint2)
     endpos1 = url.find('>', startpos1)
     link = "'www.vacationrentals.com" + url[startpos1:endpos1 - 1] + "'"
     return link
     # Works, returns to add last url to toScan go to next rental
-    
-    
-def combine(l1,l2):
-    for element in l2:
-        if element not in l1:
-            l1.append(element)
-    # If nextLink isn't in toScan, add to toScan
-
 
 def crawlSite(seedurl):
     toScan = [seedurl]
     crawled = []
     contactList = []
     while toScan:
-        page = toScan.pop() 
-        # Takes last element from tocrawl and crawls if not == to element in crawled
+        page = toScan.pop() # Takes last element from toScan and crawls if not == to element in crawled
         if page not in crawled:
             contactList.append(getContact(page_source(page))) # Adds the info from the page source of page to contactList
-            combine(toScan, getNextLink(page_source(page))) # Adds the url of the next page to crawl to tocrawl
+            combine(toScan, getNextLink(page_source(page))) # Adds the url of the next page to crawl to toScan
             crawled.append(page)
         return crawled
     return contactList
     # Main loop, scans and puts page into list crawled
-    # Will not scan through elements in crawled
-    # SHOULD return all contacts--incomplete or otherwise--found
+    # Will not crawl through elements in crawled
+    # SHOULD return all contacts found
