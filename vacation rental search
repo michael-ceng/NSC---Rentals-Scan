@@ -23,7 +23,7 @@ def getContact(n):
 
 def getNextLink(url):
     checkpoint1 = url.find('View Another')
-    checkpoint2 = url.find('<a href=', checkpoint1 - 55)
+    checkpoint2 = url.find('<a href=', checkpoint1 - 75)
     startpos1 = url.find('/vacation-rentals', checkpoint2)
     endpos1 = url.find('>', startpos1)
     link = "'www.vacationrentals.com" + url[startpos1:endpos1 - 1] + "'"
