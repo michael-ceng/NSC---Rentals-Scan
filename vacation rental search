@@ -1,52 +1,35 @@
 import urllib2
+import re
+from bs4 import BeautifulSoup
 
-# seedurl = 'http://www.vacationrentals.com/vacation-rentals/7598.html?promoType=deal'
-# Input should be a specific home rental page AND SHOULD USE SINGLE QUOTES
-#response = urllib2.urlopen('http://www.vacationrentals.com/vacation-rentals/7598.html?promoType=deal')
-#page_source = response.read()
 
-#def page_source(x):
-    #response = urllib2.urlopen(x)
-    #page_source = response.read()
-    # To get page source from a url
-    ## Broken
+def getNextLink(soup):    
+    next = soup.find('a', text=re.compile('View Another'))['href']
+    next_link = 'http://www.vacationrentals.com/%s' % next
+    return next_link
 
-def combine(l1,l2):
-    for element in l2:
-        if element not in l1:
-            l1.append(element)
-    # If nextLink isn't in toScan, add to toScan
+def getContact(soup):
+    p = soup.find('p', style=re.compile("color: #000;"))
+    print [line.strip() for line in p.text.splitlines() if line.strip()]
 
-def getContact(n):
-    checkpoint = n.find('<p style="color: #000;">')
-    startpos = n.find('>', checkpoint + 1)
-    endpos = n.find('<', startpos + 1)
-    name = n[startpos + 26:endpos]
-    return name
-    # Works, gets contact name and number if available
-
-def getNextLink(url):
-    checkpoint1 = url.find('View Another')
-    checkpoint2 = url.find('<a href=', checkpoint1 - 75)
-    # subtraction in indexing could cause problems but can be readjusted if need be
-    startpos1 = url.find('/vacation-rentals', checkpoint2)
-    endpos1 = url.find('>', startpos1)
-    link = "'www.vacationrentals.com" + url[startpos1:endpos1 - 1] + "'"
-    return link
-    # Works, returns to add last url to toScan go to next rental
-
-def crawlSite(seedurl):
-    toScan = [seedurl]
+def doIt(page):
+    links = [page]
     crawled = []
     contactList = []
-    while toScan:
-        page = toScan.pop() # Takes last element from toScan and crawls if not == to element in crawled
+    while links:
+        page = links.pop()
+        response = urllib2.urlopen(page)
+        soup = BeautifulSoup(response)
         if page not in crawled:
-            contactList.append(getContact(page_source(page))) # Adds the info from the page source of page to contactList
-            combine(toScan, getNextLink(page_source(page))) # Adds the url of the next page to crawl to toScan
+            links.append(getNextLink(soup))
+            contactList.append(getContact(soup))
             crawled.append(page)
+            return links
         return crawled
-    return contactList
-    # Main loop, scans and puts page into list crawled
-    # Will not crawl through elements in crawled
-    # SHOULD return all contacts found
+    print contactList
+
+    #returning random u's for some reason, otherwise is working?
+
+
+doIt("http://www.vacationrentals.com/vacation-rentals/7598.html?promoType=deal")
+
